@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Soccer Bets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+<h1 class="text-3xl font-bold mb-4">Scommesse Partite</h1>
+
+<div id="matches" class="space-y-4">
+    {% for match in matches %}
+    <div class="bg-white p-4 rounded shadow">
+        <div class="font-bold">{{ match.time }}</div>
+        <div class="flex items-center space-x-2 mt-2">
+            <span class="font-bold">{{ match.home }}</span>
+            <input type="number" min="0" class="result-home border p-1 w-12" data-match="{{ match.id }}">
+            <span>vs</span>
+            <input type="number" min="0" class="result-away border p-1 w-12" data-match="{{ match.id }}">
+            <span class="font-bold">{{ match.away }}</span>
+        </div>
+        <input type="text" placeholder="Wallet Solana" class="wallet border p-1 mt-1 w-full" data-match="{{ match.id }}">
+        <button class="submit-btn bg-blue-500 text-white px-2 py-1 mt-2 rounded" data-match="{{ match.id }}">Invia</button>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 class="text-2xl font-bold mt-6">Log Scommesse</h2>
+<div id="log" class="bg-white p-4 rounded shadow mt-2 max-h-80 overflow-y-auto"></div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
