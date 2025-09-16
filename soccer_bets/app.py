@@ -4,17 +4,24 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-# --- GOOGLE SHEETS ---
+# --- GOOGLE SHEETS (legge dalle variabili d'ambiente) ---
+creds_json = os.environ.get("GOOGLE_CREDENTIALS")
+if not creds_json:
+    raise ValueError("Variabile d'ambiente GOOGLE_CREDENTIALS non trovata!")
+
+creds_dict = json.loads(creds_json)
+
 scope = ["https://spreadsheets.google.com/feeds",
-         'https://www.googleapis.com/auth/spreadsheets',
+         "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
          "https://www.googleapis.com/auth/drive"]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 sheet = client.open("SoccerBets").sheet1
 
