@@ -28,7 +28,7 @@ async function submitBet(matchId) {
         const data = await res.json();
 
         if (data.status === "success") {
-            alert(data.message); // Mostra "Scommessa inviata!"
+            alert(data.message); // Mostra "Best Sent!"
             homeInput.value = "";
             awayInput.value = "";
             loadLog(); // Aggiorna subito il log
@@ -51,7 +51,7 @@ async function loadLog() {
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
-            logContainer.innerHTML = "<p>Nessuna scommessa ancora.</p>";
+            logContainer.innerHTML = "<p>No bets yet.</p>";
             return;
         }
 
@@ -76,3 +76,4 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLog(); // Carica log all'apertura
     setInterval(loadLog, 10000); // Aggiorna log ogni 10 secondi
 });
+
