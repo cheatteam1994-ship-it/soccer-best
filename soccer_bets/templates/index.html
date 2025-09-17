@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scommesse Partite</title>
+    <title>Champions League Guesser</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4">
@@ -34,7 +34,7 @@
                 </div>
                 <button data-match-id="{{ match.id }}"
                         class="bet-button bg-green-600 hover:bg-green-700 px-4 py-1 rounded-lg">
-                    Invia
+                    Send
                 </button>
             </div>
         </div>
@@ -42,11 +42,12 @@
     </div>
 
     <!-- Log -->
-    <h2 class="text-2xl font-bold mt-8 mb-2">📜 Log Scommesse</h2>
+    <h2 class="text-2xl font-bold mt-8 mb-2">📜 Bets</h2>
     <div id="log-container" class="w-full max-w-3xl bg-gray-800 rounded-xl p-4 space-y-2 text-sm">
-        <p>Caricamento...</p>
+        <p>Loading...</p>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
+
