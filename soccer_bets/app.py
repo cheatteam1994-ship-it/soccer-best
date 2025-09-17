@@ -30,10 +30,10 @@ sheet = client.open("SoccerBets").sheet1
 
 # --- PARTITE ---
 matches = [
-    {"id": 1, "home": "Juventus", "away": "Borussia Dortmund", "time": "Oggi 21:00"},
-    {"id": 2, "home": "Benfica", "away": "Qarabağ", "time": "Oggi 21:00"},
-    {"id": 3, "home": "Tottenham", "away": "Villarreal", "time": "Oggi 21:00"},
-    {"id": 4, "home": "Real Madrid", "away": "Olympique Marsiglia", "time": "Oggi 21:00"},
+    {"id": 1, "home": "Bayer Munich", "away": "Chelsea", "time": "Today 21:00"},
+    {"id": 2, "home": "PSG", "away": "Atalanta", "time": "Today 21:00"},
+    {"id": 3, "home": "Ajax", "away": "Inter", "time": "Today 21:00"},
+    {"id": 4, "home": "Liverpool", "away": "Atlético Madrid", "time": "Today 21:00"},
 ]
 
 def get_client_ip():
@@ -82,7 +82,7 @@ def submit():
         records = sheet.get_all_records(empty2zero=False)
         for r in records:
             if str(r.get("Partita", "")) == str(match_id) and r.get("IP") == ip:
-                return jsonify({"status": "error", "message": "Hai già scommesso su questa partita"}), 400
+                return jsonify({"status": "error", "message": "You've already bet on this match."}), 400
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         result = f"{home_goals}-{away_goals}"
@@ -91,7 +91,7 @@ def submit():
         # Scrive tutto nel Google Sheet
         sheet.insert_row([match_id, match_name, result, wallet, ip, timestamp], index=2)
 
-        return jsonify({"status": "success", "message": "Scommessa inviata!"})
+        return jsonify({"status": "success", "message": "Bet Sent!"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"Errore server: {str(e)}"}), 500
 
@@ -108,3 +108,4 @@ def log():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
