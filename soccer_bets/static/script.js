@@ -1,28 +1,4 @@
-// Funzione per caricare il log
-async function loadLog() {
-    try {
-        const res = await fetch("/log");
-        const data = await res.json();
-        const logContainer = document.getElementById("log");
-        logContainer.innerHTML = "";
-
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach(row => {
-                const div = document.createElement("div");
-                div.className = "p-2 border-b";
-                div.textContent =
-                    `${row["Squadre"]} | Risultato: ${row["Risultato"]} | Wallet: ${row["Wallet"]} | IP: ${row["IP"]} | ${row["Timestamp"]}`;
-                logContainer.appendChild(div);
-            });
-        } else {
-            logContainer.innerHTML = "<p>Nessuna scommessa ancora.</p>";
-        }
-    } catch (err) {
-        console.error("Errore nel caricamento del log:", err);
-    }
-}
-
-// Funzione per inviare la scommessa
+// Funzione per inviare scommessa
 async function submitBet(matchId) {
     const homeInput = document.getElementById(`home-${matchId}`);
     const awayInput = document.getElementById(`away-${matchId}`);
@@ -31,6 +7,11 @@ async function submitBet(matchId) {
     const homeGoals = homeInput.value;
     const awayGoals = awayInput.value;
     const wallet = walletInput.value;
+
+    if (!wallet || homeGoals === "" || awayGoals === "") {
+        alert("Compila tutti i campi!");
+        return;
+    }
 
     try {
         const res = await fetch("/submit", {
@@ -45,29 +26,50 @@ async function submitBet(matchId) {
         });
 
         const data = await res.json();
-
         if (data.status === "success") {
-            alert("✅ " + data.message);
             homeInput.value = "";
             awayInput.value = "";
             loadLog();
         } else {
-            alert("⚠️ " + data.message);
+            alert(data.message);
         }
     } catch (err) {
         console.error("Errore nell'invio:", err);
-        alert("❌ Errore di connessione al server");
+        alert("Errore di connessione al server");
     }
 }
 
-// Aggiunge eventi ai pulsanti
+// Funzione per caricare il log
+async function loadLog() {
+    const logContainer = document.getElementById("log-container");
+    if (!logContainer) return;
+
+    try {
+        const res = await fetch("/log");
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            logContainer.innerHTML = "<p>Nessuna scommessa ancora.</p>";
+            return;
+        }
+
+        logContainer.innerHTML = data
+            .map(entry => {
+                return `<p>Partita: ${entry.Squadre} | Risultato: ${entry.Risultato} | Wallet: ${entry.Wallet} | IP: ${entry.IP} | ${entry.Timestamp}</p>`;
+            })
+            .join("");
+    } catch (err) {
+        console.error("Errore caricamento log:", err);
+        logContainer.innerHTML = "Errore nel caricamento del log.";
+    }
+}
+
+// Eventi
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".bet-button").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const matchId = btn.dataset.matchId;
-            submitBet(matchId);
-        });
+        btn.addEventListener("click", () => submitBet(btn.dataset.matchId));
     });
 
     loadLog();
+    setInterval(loadLog, 10000); // Aggiorna log ogni 10 secondi
 });
