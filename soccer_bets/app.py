@@ -65,7 +65,7 @@ def submit():
         ip = get_client_ip()
 
         if home_goals is None or away_goals is None or not wallet:
-            return jsonify({"status": "error", "message": "Dati mancanti"}), 400
+            return jsonify({"status": "error", "message": "Missing data"}), 400
 
         try:
             home_goals = int(home_goals)
@@ -108,4 +108,5 @@ def log():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
