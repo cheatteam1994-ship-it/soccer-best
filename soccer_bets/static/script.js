@@ -1,4 +1,4 @@
-// Funzione per inviare scommessa
+// Funzione per inviare la scommessa
 async function submitBet(matchId) {
     const homeInput = document.getElementById(`home-${matchId}`);
     const awayInput = document.getElementById(`away-${matchId}`);
@@ -26,10 +26,12 @@ async function submitBet(matchId) {
         });
 
         const data = await res.json();
+
         if (data.status === "success") {
+            alert(data.message); // Mostra "Scommessa inviata!"
             homeInput.value = "";
             awayInput.value = "";
-            loadLog();
+            loadLog(); // Aggiorna subito il log
         } else {
             alert(data.message);
         }
@@ -39,7 +41,7 @@ async function submitBet(matchId) {
     }
 }
 
-// Funzione per caricare il log
+// Funzione per caricare il log dal server
 async function loadLog() {
     const logContainer = document.getElementById("log-container");
     if (!logContainer) return;
@@ -53,6 +55,7 @@ async function loadLog() {
             return;
         }
 
+        // Mostra il log nel formato corretto
         logContainer.innerHTML = data
             .map(entry => {
                 return `<p>Partita: ${entry.Squadre} | Risultato: ${entry.Risultato} | Wallet: ${entry.Wallet} | IP: ${entry.IP} | ${entry.Timestamp}</p>`;
@@ -70,6 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => submitBet(btn.dataset.matchId));
     });
 
-    loadLog();
+    loadLog(); // Carica log all'apertura
     setInterval(loadLog, 10000); // Aggiorna log ogni 10 secondi
 });
