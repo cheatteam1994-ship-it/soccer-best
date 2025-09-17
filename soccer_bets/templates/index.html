@@ -10,7 +10,7 @@
 
     <h1 class="text-3xl font-bold mb-4">💸 Scommesse Partite</h1>
 
-    <!-- Campo Wallet -->
+    <!-- Wallet -->
     <div class="mb-6 w-full max-w-md">
         <label for="wallet" class="block text-lg font-semibold mb-2">Indirizzo Wallet Solana</label>
         <input id="wallet" type="text" placeholder="Incolla il tuo wallet"
@@ -41,14 +41,12 @@
         {% endfor %}
     </div>
 
-    <!-- Log delle scommesse -->
+    <!-- Log -->
     <h2 class="text-2xl font-bold mt-8 mb-2">📜 Log Scommesse</h2>
-    <div id="log" class="w-full max-w-3xl bg-gray-800 rounded-xl p-4 space-y-2 text-sm">
+    <div id="log-container" class="w-full max-w-3xl bg-gray-800 rounded-xl p-4 space-y-2 text-sm">
         <p>Caricamento...</p>
     </div>
 
-    <!-- Script -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-
 </body>
 </html>
