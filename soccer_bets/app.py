@@ -9,7 +9,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# --- GOOGLE SHEETS (legge dalle variabili d'ambiente) ---
+# --- GOOGLE SHEETS ---
 creds_json = os.environ.get("GOOGLE_CREDENTIALS")
 if not creds_json:
     raise ValueError("Variabile d'ambiente GOOGLE_CREDENTIALS non trovata!")
@@ -24,8 +24,8 @@ scope = ["https://spreadsheets.google.com/feeds",
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-# Apri il foglio e assicurati che la prima riga siano intestazioni:
-# Partita | Risultato | Wallet | IP | Timestamp
+# Apri foglio e assicurati che la prima riga siano intestazioni:
+# Partita | Squadre | Risultato | Wallet | IP | Timestamp
 sheet = client.open("SoccerBets").sheet1
 
 # --- PARTITE ---
@@ -35,6 +35,12 @@ matches = [
     {"id": 3, "home": "Tottenham", "away": "Villarreal", "time": "Oggi 21:00"},
     {"id": 4, "home": "Real Madrid", "away": "Olympique Marsiglia", "time": "Oggi 21:00"},
 ]
+
+def get_client_ip():
+    # X-Forwarded-For è usato da Render/Reverse Proxies per dare l'IP reale
+    if request.headers.get("X-Forwarded-For"):
+        return request.headers.get("X-Forwarded-For").split(",")[0]
+    return request.remote_addr
 
 @app.route('/')
 def index():
@@ -48,10 +54,9 @@ def submit():
         home_goals = data.get("home_goals")
         away_goals = data.get("away_goals")
         wallet = data.get("wallet")
-        ip = request.remote_addr
+        ip = get_client_ip()
 
-        # Validazione dati
-        if home_goals is None or away_goals is None or wallet is None or wallet.strip() == "":
+        if home_goals is None or away_goals is None or not wallet:
             return jsonify({"status":"error", "message":"Dati mancanti"}), 400
 
         try:
@@ -62,20 +67,26 @@ def submit():
         except:
             return jsonify({"status":"error", "message":"I gol devono essere numeri >= 0"}), 400
 
-        # Controllo se IP ha già scommesso sulla stessa partita
+        # Trova la partita per avere i nomi
+        match = next((m for m in matches if m["id"] == match_id), None)
+        if not match:
+            return jsonify({"status":"error", "message":"Partita non trovata"}), 400
+
+        # Controlla se lo stesso IP ha già scommesso su questa partita
         records = sheet.get_all_records(empty2zero=False)
         for r in records:
-            if int(r.get('Partita', 0)) == match_id and r.get('IP') == ip:
+            if str(r.get('Partita', "")) == str(match_id) and r.get('IP') == ip:
                 return jsonify({"status":"error", "message":"Hai già scommesso su questa partita"}), 400
 
-        # Salvataggio nel foglio, sempre sotto l'intestazione
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         result = f"{home_goals}-{away_goals}"
+        match_name = f"{match['home']} vs {match['away']}"
 
-        sheet.insert_row([match_id, result, wallet, ip, timestamp], index=2)
+        # Salva nel foglio (wallet intero)
+        sheet.insert_row([match_id, match_name, result, wallet, ip, timestamp], index=2)
 
         return jsonify({"status":"success", "message":"Scommessa inviata!"})
-    
+
     except Exception as e:
         return jsonify({"status":"error","message":f"Errore server: {str(e)}"}), 500
 
@@ -83,13 +94,14 @@ def submit():
 def log():
     try:
         records = sheet.get_all_records(empty2zero=False)
+        # Maschera il wallet quando restituisce i dati al frontend
+        for r in records:
+            wallet = r.get("Wallet", "")
+            if wallet and len(wallet) > 4:
+                r["Wallet"] = "****" + wallet[-4:]
         return jsonify(records)
     except Exception as e:
         return jsonify({"status":"error","message":f"Errore server: {str(e)}"}), 500
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    return jsonify({"status":"error","message":str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
