@@ -9,7 +9,7 @@ async function submitBet(matchId) {
     const wallet = walletInput.value;
 
     if (!wallet || homeGoals === "" || awayGoals === "") {
-        alert("Compila tutti i campi!");
+        alert("Fill out the fields!");
         return;
     }
 
@@ -76,4 +76,5 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLog(); // Carica log all'apertura
     setInterval(loadLog, 10000); // Aggiorna log ogni 10 secondi
 });
+
 
