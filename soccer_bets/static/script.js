@@ -58,7 +58,7 @@ async function loadLog() {
         // Mostra il log nel formato corretto
         logContainer.innerHTML = data
             .map(entry => {
-                return `<p>Partita: ${entry.Squadre} | Risultato: ${entry.Risultato} | Wallet: ${entry.Wallet} | IP: ${entry.IP} | ${entry.Timestamp}</p>`;
+                return `<p>Match: ${entry.Squadre} | Score: ${entry.Risultato} | Wallet: ${entry.Wallet} | IP: ${entry.IP} | ${entry.Timestamp}</p>`;
             })
             .join("");
     } catch (err) {
@@ -76,5 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLog(); // Carica log all'apertura
     setInterval(loadLog, 10000); // Aggiorna log ogni 10 secondi
 });
+
 
 
