@@ -2,33 +2,53 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Soccer Bets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scommesse Partite</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4">
 
-<h1 class="text-3xl font-bold mb-4">Scommesse Partite</h1>
+    <h1 class="text-3xl font-bold mb-4">💸 Scommesse Partite</h1>
 
-<div id="matches" class="space-y-4">
-    {% for match in matches %}
-    <div class="bg-white p-4 rounded shadow">
-        <div class="font-bold">{{ match.time }}</div>
-        <div class="flex items-center space-x-2 mt-2">
-            <span class="font-bold">{{ match.home }}</span>
-            <input type="number" min="0" class="result-home border p-1 w-12" data-match="{{ match.id }}">
-            <span>vs</span>
-            <input type="number" min="0" class="result-away border p-1 w-12" data-match="{{ match.id }}">
-            <span class="font-bold">{{ match.away }}</span>
-        </div>
-        <input type="text" placeholder="Wallet Solana" class="wallet border p-1 mt-1 w-full" data-match="{{ match.id }}">
-        <button class="submit-btn bg-blue-500 text-white px-2 py-1 mt-2 rounded" data-match="{{ match.id }}">Invia</button>
+    <!-- Campo Wallet -->
+    <div class="mb-6 w-full max-w-md">
+        <label for="wallet" class="block text-lg font-semibold mb-2">Indirizzo Wallet Solana</label>
+        <input id="wallet" type="text" placeholder="Incolla il tuo wallet"
+               class="w-full p-2 rounded-lg text-black">
     </div>
-    {% endfor %}
-</div>
 
-<h2 class="text-2xl font-bold mt-6">Log Scommesse</h2>
-<div id="log" class="bg-white p-4 rounded shadow mt-2 max-h-80 overflow-y-auto"></div>
+    <!-- Lista Partite -->
+    <div class="w-full max-w-2xl space-y-4">
+        {% for match in matches %}
+        <div class="bg-gray-800 p-4 rounded-xl shadow-md">
+            <p class="text-lg font-semibold mb-2">{{ match.time }}</p>
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold">{{ match.home }}</span>
+                    <input id="home-{{ match.id }}" type="number" min="0"
+                           class="w-12 text-center text-black rounded-lg">
+                    <span class="font-bold">vs</span>
+                    <input id="away-{{ match.id }}" type="number" min="0"
+                           class="w-12 text-center text-black rounded-lg">
+                    <span class="font-bold">{{ match.away }}</span>
+                </div>
+                <button data-match-id="{{ match.id }}"
+                        class="bet-button bg-green-600 hover:bg-green-700 px-4 py-1 rounded-lg">
+                    Invia
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-<script src="/static/script.js"></script>
+    <!-- Log delle scommesse -->
+    <h2 class="text-2xl font-bold mt-8 mb-2">📜 Log Scommesse</h2>
+    <div id="log" class="w-full max-w-3xl bg-gray-800 rounded-xl p-4 space-y-2 text-sm">
+        <p>Caricamento...</p>
+    </div>
+
+    <!-- Script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>
